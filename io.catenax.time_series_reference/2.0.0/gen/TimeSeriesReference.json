@@ -1,0 +1,16 @@
+{
+  "decimalSeparator" : "dot",
+  "sourceFile" : "telnet://192.0.2.16:80/",
+  "payload" : [ {
+    "cycleColumn" : "Cycle_ID",
+    "units" : [ {
+      "unit" : "unit:hectopascal"
+    } ],
+    "variableNames" : [ "eOMtThyhVNLWUZNRcBaQKxI" ],
+    "timeColumnName" : "Time",
+    "value" : "yedUsFwdkelQbxeTeQOvaScfqIOOmaa",
+    "timestamp" : "2025-11-14T13:32:02.970+01:00"
+  } ],
+  "fileExtension" : "csv",
+  "delimiter" : "semicolon"
+}

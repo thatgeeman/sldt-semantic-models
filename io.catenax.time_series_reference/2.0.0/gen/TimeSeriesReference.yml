@@ -1,0 +1,313 @@
+---
+openapi: 3.0.3
+info:
+  title: TimeSeriesReference
+  version: v2
+  x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#TimeSeriesReference"
+servers:
+- url: catenax.io/api/v2
+  variables:
+    api-version:
+      default: v2
+paths:
+  /{tenant-id}/time-series-reference:
+    get:
+      tags:
+      - TimeSeriesReference
+      operationId: getTimeSeriesReference
+      parameters:
+      - name: tenant-id
+        in: path
+        description: The ID of the tenant owning the requested Twin.
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: since
+        in: query
+        description: A timestamp that points to the start of the time-based data.
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: until
+        in: query
+        description: A timestamp that points to the end of the time-based data.
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: limit
+        in: query
+        description: Number of items to return per call.
+        required: false
+        schema:
+          type: number
+      responses:
+        "200":
+          $ref: "#/components/responses/TimeSeriesReference"
+        "400":
+          $ref: "#/components/responses/ClientError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"
+    Error:
+      type: object
+      required:
+      - details
+      properties:
+        message:
+          type: string
+          minLength: 1
+        path:
+          type: string
+          minLength: 1
+        details:
+          type: object
+          minLength: 1
+          additionalProperties:
+            type: object
+        code:
+          type: string
+          nullable: true
+    PagingSchema:
+      type: object
+      properties:
+        items:
+          type: array
+          $ref: "#/components/schemas/TimeSeriesReference"
+        totalItems:
+          type: number
+        totalPages:
+          type: number
+        pageSize:
+          type: number
+        currentPage:
+          type: number
+    DecimalSeparator:
+      type: string
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#DecimalSeparator"
+      description: Indicates whether a dot or comma is used to separate the decimal
+        place in the source file.
+      enum:
+      - dot
+      - comma
+    ResourcePath:
+      type: string
+      format: uri
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#ResourcePath"
+      description: The path of a resource.
+    FileExtension:
+      type: string
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#FileExtension"
+      description: "Indicates which of csv, xlsx, none, txt, dat, data, parquet, mdf\
+        \ or mf4 is used as file extension."
+      enum:
+      - csv
+      - txt
+      - dat
+      - data
+      - none
+      - parquet
+      - mdf
+      - mf4
+      - xlsx
+    Delimiter:
+      type: string
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#Delimiter"
+      description: "Indicates whether a semicolon, comma or tab is used as a delimiter\
+        \ between datapoints for csv or txt file extensions."
+      enum:
+      - semicolon
+      - comma
+      - tab
+    UnitReference:
+      type: string
+      pattern: "[a-zA-Z]*:[a-zA-Z]+"
+      x-samm-aspect-model-urn: "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#UnitReference"
+      description: Describes a Property containing a reference to one of the units
+        in the Unit Catalog.
+    Unit:
+      description: The unit of a column.
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#Unit"
+      type: object
+      properties:
+        unit:
+          description: The unit of a column.
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#unit"
+          $ref: "#/components/schemas/UnitReference"
+      required:
+      - unit
+    UnitsListCharacteristic:
+      description: Lists the unit for each datapoint.
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#UnitsListCharacteristic"
+      type: array
+      items:
+        $ref: "#/components/schemas/Unit"
+    VariableListCharacteristic:
+      description: Lists the name for each datapoint.
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#VariableListCharacteristic"
+      type: array
+      items:
+        type: string
+    TimeColumnChoice:
+      type: string
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#TimeColumnChoice"
+      description: Specifies the name of the time columns variable.
+      enum:
+      - Time
+      - TIME
+      - time
+      - t
+    CycleColumnChoice:
+      type: string
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#CycleColumnChoice"
+      description: Specifies the name of the cycle column variable.
+      enum:
+      - Cycle_ID
+      - cycle_id
+      - CycleID
+      - cycle
+      - Cycle
+    ValueCharacteristic:
+      type: string
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#ValueCharacteristic"
+      description: The value recorded at a given point in time
+    Timestamp:
+      type: string
+      pattern: "-?([1-9][0-9]{3,}|0[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T(([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\\
+        .[0-9]+)?|(24:00:00(\\.0+)?))(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?"
+      x-samm-aspect-model-urn: "urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#Timestamp"
+      description: Describes a Property which contains the date and time with an optional
+        timezone.
+    PayloadEntity:
+      description: Contains the information about variable names and their units as
+        well as the name of the time column.
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#PayloadEntity"
+      type: object
+      properties:
+        units:
+          description: Lists the unit for each datapoint.
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#units"
+          $ref: "#/components/schemas/UnitsListCharacteristic"
+        variableNames:
+          description: Lists the name for each datapoint.
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#variableNames"
+          $ref: "#/components/schemas/VariableListCharacteristic"
+        timeColumnName:
+          description: Specifies the name of the Variable Names entry which contains
+            the time column.
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#timeColumnName"
+          $ref: "#/components/schemas/TimeColumnChoice"
+        cycleColumn:
+          description: The variable name that specifies the operational cycle ID in
+            the source file.
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#cycleColumn"
+          $ref: "#/components/schemas/CycleColumnChoice"
+        value:
+          description: Recorded value aligned with the time
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#value"
+          $ref: "#/components/schemas/ValueCharacteristic"
+      required:
+      - units
+      - variableNames
+      - timeColumnName
+      - value
+      allOf:
+      - $ref: "#/components/schemas/TimeSeriesEntity"
+    TimeSeriesEntity:
+      description: An Entity which represents a key/value pair. The key is the timestamp
+        when the value was recorded and the value is the value which was recorded.
+      x-samm-aspect-model-urn: "urn:samm:org.eclipse.esmf.samm:entity:2.2.0#TimeSeriesEntity"
+      type: object
+      properties:
+        timestamp:
+          description: The specific point in time when the corresponding value was
+            recorded.
+          x-samm-aspect-model-urn: "urn:samm:org.eclipse.esmf.samm:entity:2.2.0#timestamp"
+          $ref: "#/components/schemas/Timestamp"
+      required:
+      - timestamp
+    PayloadCharacteristic:
+      description: Contains the information about variable names and their units as
+        well as the name of the time column. Optionally information on the cycle column
+        may be provided.
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#PayloadCharacteristic"
+      type: array
+      items:
+        $ref: "#/components/schemas/PayloadEntity"
+      uniqueItems: true
+    TimeSeriesReference:
+      type: object
+      x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#TimeSeriesReference"
+      properties:
+        decimalSeparator:
+          description: Indicates whether a dot or comma is used to separate the decimal
+            place in the source file.
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#decimalSeparator"
+          $ref: "#/components/schemas/DecimalSeparator"
+        sourceFile:
+          description: Contains the URI to the referenced time series file.
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#sourceFile"
+          $ref: "#/components/schemas/ResourcePath"
+        fileExtension:
+          description: "Indicates which of csv, xlsx, none, txt, dat, data, parquet,\
+            \ mdf or mf4 is used as file extension."
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#fileExtension"
+          $ref: "#/components/schemas/FileExtension"
+        delimiter:
+          description: "Indicates whether a semicolon, comma or tab is used as a delimiter\
+            \ between datapoints for csv or txt file extensions."
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#delimiter"
+          $ref: "#/components/schemas/Delimiter"
+        payload:
+          description: Contains the information about variable names and their units
+            as well as the name of the time column. Optionally information on the
+            cycle column may be provided.
+          x-samm-aspect-model-urn: "urn:samm:io.catenax.time_series_reference:2.0.0#payload"
+          $ref: "#/components/schemas/PayloadCharacteristic"
+      required:
+      - decimalSeparator
+      - sourceFile
+      - fileExtension
+      - delimiter
+      - payload
+  responses:
+    Unauthorized:
+      description: The requesting user or client is not authenticated.
+    Forbidden:
+      description: The requesting user or client is not authorized to access resources.
+    NotFoundError:
+      description: The requested resource has not been found.
+    ClientError:
+      description: Payload or user input is invalid. See error details in the payload
+        for more information.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    TimeSeriesReference:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PagingSchema"
+      description: The request was successful.
+  requestBodies:
+    TimeSeriesReference:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TimeSeriesReference"
+      required: true
